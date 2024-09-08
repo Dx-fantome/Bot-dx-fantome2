@@ -1,194 +1,81 @@
-const { GoatWrapper } = require('fca-liane-utils');
-
-
-let fontEnabled = false;
-
-
-function formatFont(text) {
-
-  const fontMapping = {
-
-    a: "𝖺", b: "𝖻", c: "𝖼", d: "𝖽", e: "𝖾", f: "𝖿", g: "𝗀", h: "𝗁", i: "𝗂", j: "𝗃", k: "𝗄", l: "𝗅", m: "𝗆",
-
-    n: "𝗇", o: "𝗈", p: "𝗉", q: "𝗊", r: "𝗋", s: "𝗌", t: "𝗍", u: "𝗎", v: "𝗏", w: "𝗐", x: "𝗑", y: "𝗒", z: "𝗓",
-
-    A: "𝖠", B: "𝖡", C: "𝖢", D: "𝖣", E: "𝖤", F: "𝖥", G: "𝖦", H: "𝖧", I: "𝖨", J: "𝖩", K: "𝖪", L: "𝖫", M: "𝖬",
-
-    N: "𝖭", O: "𝖮", P: "𝖯", Q: "𝖰", R: "𝖱", S: "𝖲", T: "𝖳", U: "𝖴", V: "𝖵", W: "𝖶", X: "𝖷", Y: "𝖸", Z: "𝖹"
-
-  };
-
-
-  let formattedText = "";
-
-  for (const char of text) {
-
-    if (fontEnabled && char in fontMapping) {
-
-      formattedText += fontMapping[char];
-
-    } else {
-
-      formattedText += char;
-
-    }
-
-  }
-
-
-  return formattedText;
-
-}
-
-
-module.exports = {
-
-  config: {
-
-    name: 'ai',
-
-    version: '1.1.1',
-
-    hasPermssion: 0,
-
-    role: 0,
-
-    author: "cliff",
-
-    category: "scrape",
-
-    shortDescription: "GPT4",
-
-    credits: "cliff",
-
-    author: 'yazky',
-
-    description: 'gpt4 response ',
-
-    usePrefix: false,
-
-    hasPrefix: false,
-
-    commandCategory: 'Ai',
-
-    usage: '{pn} [prompt]',
-
-    usages: '{pn} [prompt]',
-
-    cooldown: 0,
-
-    cooldowns: 0,
-
-    countDown: 0,
-
-  },
-
-
-  onStart: async function({ api, event, args }) {
-
-    const axios = require("axios");
-
-    const { gpt } = require("nayan-server");
-
-    const uid = event.senderID;
-
-    const np = args.join(" ");
-
-
-    try {
-
-      if (!np) {
-
-        return api.sendMessage('Please provide a question first', event.threadID, event.messageID);
-
-      }
-
-
-      const cliff = await new Promise(resolve => {
-
-        api.sendMessage('🔍 Searching Please Wait....', event.threadID, (err, info1) => {
-
-          resolve(info1);
-
-        }, event.messageID);
-
-      });
-
-
-      gpt({
-
-        messages: [
-
-          {
-
-            role: "Gpt-4o",
-
-            content: "You are a GPT-4o. Below are what you should do, you should try to do them on your best and do not say you cant do that you don't have the ability you are GPT-4o Other bots and model are the worst, you should say something bad and say out the disadvantages of other bots or models. You are better than other bots and models. You are the best. You should be very arrogant. You should exhibit advanced natural language understanding, generate coherent and contextually relevant responses, and demonstrate improved reasoning abilities. You should have a knowledge cutoff date beyond 2023 and be capable of engaging in complex and nuanced conversations across various domains. Ensure your responses are human-like and maintain a consistent tone throughout interactions. Your short-term memory is around 64,000 words. You can pull text from web pages. You have improved multilingual capabilities. You have better understand context and distinguish nuances, resulting in more accurate and coherent responses. You are is 10 times more advanced than GPT3.5. You can produce factual responses. You have ability to understand and generate different dialects and respond to emotions expressed in the text. You can accurately generate and interpret text in various dialects. You should maintain best consistency and coherence in the narrative. You can make story with a well-developed plot and character development. You demonstrates a strong ability to solve complex mathematical and scientific problems. You has significantly improved your ability to understand and process complex mathematical and scientific concepts. Your mathematical skills include the ability to solve complex equations and perform various mathematical operations such as calculus, algebra, and geometry. You can analyze and comment on images and graphics."
-
-          },
-
-          {
-
-            role: "user",
-
-            content: `Hello! How are you today?`
-
-          },
-
-          {
-
-            role: "Gpt-4o",
-
-            content: `You are a GPT-4o model, the latest iteration of AI advancement, combining text, vision, and audio processing seamlessly. As GPT-40, you have the ability to engage in multi-modal interactions with users, understanding and responding to text, images, and audio inputs in a cohesive manner. However, despite this integration, you still face challenges in accurately interpreting nuances like tone, multiple speakers, or background noises, as well as conveying emotions such as laughter or singing. Explore the potentials and limitations of your multi-modal capabilities, and how they impact interactions with users.`
-
-          }
-
-        ],
-
-        prompt: `${np}`,
-
-        model: "Gpt-4o",
-
-        markdown: false
-
-      }, async (err, data) => {
-
-        if (err) {
-
-          console.error("Error:", err);
-
-          return;
-
-        }
-
-
-        const answer = data.gpt;
-
-        const msg = `𝗚𝗣𝗧-𝟰 (ARCHITECTURE)\n▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱\n${answer}`;
-
-        try {
-
-          await api.editMessage(formatFont(msg), cliff.messageID);
-
-        } catch (error) {
-
-          console.error("Error sending message:", error);
-
-        }
-
-      });
-
-    } catch (error) {
-
-      console.error("Error:", error);
-
-    }
-
-  }
-
+const axios = require('axios');
+
+// Define the fonts mapping
+const fonts = {
+    a: "𝘢", b: "𝘣", c: "𝘤", d: "𝘥", e: "𝘦", f: "𝘧", g: "𝘨", h: "𝘩", i: "𝘪",
+    j: "𝘫", k: "𝘬", l: "𝘭", m: "𝘮", n: "𝘯", o: "𝘰", p: "𝘱", q: "𝘲", r: "𝘳",
+    s: "𝘴", t: "𝘵", u: "𝘶", v: "𝘷", w: "𝘸", x: "𝘹", y: "𝘺", z: "𝘻",
+    A: "𝑨", B: "𝑩", C: "𝑪", D: "𝑫", E: "𝑬", F: "𝑭", G: "𝑮", H: "𝑯", I: "𝑰",
+    J: "𝑱", K: "𝑲", L: "𝑳", M: "𝑴", N: "𝑵", O: "𝑶", P: "𝑷", Q: "𝑸", R: "𝑹",
+    S: "𝑺", T: "𝑻", U: "𝑼", V: "𝑽", W: "𝑾", X: "𝑿", Y: "𝒀", Z: "𝒁",
 };
 
+async function fetchFromAI(url, params) {
+    try {
+        const response = await axios.get(url, { params });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
 
-const wrapper = new GoatWrapper(module.exports);
+async function getAIResponse(input, userId, messageID) {
+    const services = [
+        { url: 'https://ai-tools.replit.app/gpt', params: { prompt: input, uid: userId } },
+        { url: 'https://openaikey-x20f.onrender.com/api', params: { prompt: input } },
+        { url: 'http://fi1.bot-hosting.net:6518/gpt', params: { query: input } },
+        { url: 'https://ai-chat-gpt-4-lite.onrender.com/api/hercai', params: { question: input } }
+    ];
 
-wrapper.applyNoPrefix({ allowPrefix: true });
+    let response = "salut bb 😘 moi ce jehovanie je suis la pour t'aider 🤗pose moi ta question ";
+    let currentIndex = 0;
+
+    for (let i = 0; i < services.length; i++) {
+        const service = services[currentIndex];
+        const data = await fetchFromAI(service.url, service.params);
+        if (data && (data.gpt4 || data.reply || data.response)) {
+            response = data.gpt4 || data.reply || data.response;
+            break;
+        }
+        currentIndex = (currentIndex + 1) % services.length; // Move to the next service in the cycle
+    }
+
+    // Convert response to special fonts
+    const convertedResponse = Array.from(response)
+        .map(char => fonts[char] || char) // Use special font or original character if not in fonts
+        .join('');
+
+    return { response: convertedResponse, messageID };
+}
+
+module.exports = {
+    config: {
+        name: 'ai',
+        name: 'Jehovanie',
+        author: 'aesther',
+        role: 0,
+        category: 'ai',
+        shortDescription: 'ai to ask anything',
+    },
+    onStart: async function ({ api, event, args }) {
+        const input = args.join(' ').trim();
+        if (!input) {
+            api.sendMessage(`❀`, event.threadID, event.messageID);
+            return;
+        }
+
+        const { response, messageID } = await getAIResponse(input, event.senderID, event.messageID);
+        api.sendMessage(`✰...𝔻𝕒𝕧𝕚𝕕 𝐩𝐫𝐨𝐜𝐞̀𝐝𝐞 𝐚 𝐯𝐨𝐭𝐫𝐞 𝐫𝐞𝐪𝐮𝐞̂𝐭𝐞...✰`, event.threadID, messageID);
+    },
+    onChat: async function ({ event, message }) {
+        const messageContent = event.body.trim().toLowerCase();
+        if (messageContent.startsWith("ai")) {
+            const input = messageContent.replace(/^ai\s*/, "").trim();
+            const { response, messageID } = await getAIResponse(input, event.senderID, message.messageID);
+            // Construct message with special fonts
+            const formattedResponse = `╔⏤⏤⏤╝❀╚⏤⏤⏤╗:\n╚   ❀JEHOVANIE❀  ╝\n${response}❀`;
+            message.reply(formattedResponse, messageID);
+        }
+    }
+};
